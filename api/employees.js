@@ -18,7 +18,7 @@ employeesRouter.get("/", async (req, res) => {
 });
 
 // POST /employees - creates a new employee
-employeesRouter.post("/", (req, res) => {
+employeesRouter.post("/", async (req, res) => {
 
     const name = req.body.name ;
     const birthday = req.body.birthday ;
