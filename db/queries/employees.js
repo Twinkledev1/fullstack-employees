@@ -23,7 +23,7 @@ export async function getEmployees() {
   try {
     const sql = `select * from employees; `;
     const res = await db.query(sql);
-    // console.log("Result -", res.rows); // ✅ prints array of objects
+    console.log("Result -", res.rows); // ✅ prints array of objects
     return res.rows;
   } catch (error) {
     console.error(error);
@@ -34,8 +34,16 @@ export async function getEmployees() {
  * @returns the employee with the given id
  * @returns undefined if employee with the given id does not exist
  */
-export async function getEmployee(id) {
+export async function getEmployeesId(id) {
   // TODO
+  try {
+    const sql = `SELECT * FROM employees WHERE id = $1;`;
+    const result = await db.query(sql, [id]);
+    console.log("Result -", result.rows);
+    return result.rows[0];
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 /**
