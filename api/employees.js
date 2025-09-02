@@ -1,5 +1,5 @@
 import express from "express";
-import { getEmployees, createEmployee , getEmployeesId} from "../db/queries/employees.js";
+import { getEmployees, createEmployee , getEmployeesId, deleteEmployee} from "../db/queries/employees.js";
 
 const employeesRouter = express.Router();
 export default employeesRouter;
@@ -94,20 +94,26 @@ employeesRouter.delete("/:id", async (req,res) => {
          if (!id || id <= 0) {
             return res.status(400).send("Employee id must be a positive integer");
           }
-           // Fetch employee from DB
 
-        const employee = await deleteEmployee(id); 
         // Check if employee  exist
         if (!id || id === 0) {
             return res.status(404).send(" Employee does not exist")
           }
 
-           // delete the new employee with status 204
-        res.status(204).json(employee);
+          // Fetch employee from DB
+          const employee = await deleteEmployee(id); 
+
+        //   Employee not found 
+        if (!employee){
+            return res.status(404).send("Employee does not exist")
+        }
+
+           // delete employee with status 204
+        res.status(204).send();
     } 
         
      catch (error) {
-        console.error("Error get employee:", err);
+        console.error("Error get employee:",error);
         res.json({ error: "Internal server error" })
     }
 })

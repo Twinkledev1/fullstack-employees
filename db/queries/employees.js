@@ -61,12 +61,20 @@ export async function updateEmployee({ id, name, birthday, salary }) {
 export async function deleteEmployee(id) {
   // TODO
   try{
-const sql = `delete * from employees where id = $1;`;
+const sql = `delete from employees where id = $1 returning *;`;
 const res = await db.query(sql,[id]);
-console.log("Result -", result.rows);
-return res.rows[0].id;
+console.log("Result -", res.rows);
+
+
+    // If no rows were deleted → employee didn’t exist
+    if (res.rows.length === 0) {
+      return null;
+    }
+
+return res.rows[0];
   }
   catch(err){
-    console.error(err);
+    console.error("Error deleting employee:",err);
+    throw err;
   }
 }
