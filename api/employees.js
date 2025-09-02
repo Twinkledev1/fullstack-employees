@@ -74,7 +74,7 @@ employeesRouter.get("/:id", async (req, res) => {
           return res.status(404).send(" Employee does not exist")
         }
     
-        // Return the new employee with status 201
+        // Return the new employee 
         res.json(employee);
       } 
       
@@ -83,3 +83,31 @@ employeesRouter.get("/:id", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
       }
     });
+
+ `DELETE /employees/:id`
+
+employeesRouter.delete("/:id", async (req,res) => {
+    try {
+        const id = parseInt(req.params.id , 10);
+
+         // Check if provided id is not a positive integer
+         if (!id || id <= 0) {
+            return res.status(400).send("Employee id must be a positive integer");
+          }
+           // Fetch employee from DB
+
+        const employee = await deleteEmployee(id); 
+        // Check if employee  exist
+        if (!id || id === 0) {
+            return res.status(404).send(" Employee does not exist")
+          }
+
+           // delete the new employee with status 204
+        res.status(204).json(employee);
+    } 
+        
+     catch (error) {
+        console.error("Error get employee:", err);
+        res.json({ error: "Internal server error" })
+    }
+})

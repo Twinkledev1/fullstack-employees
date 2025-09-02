@@ -40,7 +40,7 @@ export async function getEmployeesId(id) {
     const sql = `SELECT * FROM employees WHERE id = $1;`;
     const result = await db.query(sql, [id]);
     console.log("Result -", result.rows);
-    return result.rows[0];
+    return result.rows[0].id;
   } catch (error) {
     console.error(error);
   }
@@ -60,4 +60,13 @@ export async function updateEmployee({ id, name, birthday, salary }) {
  */
 export async function deleteEmployee(id) {
   // TODO
+  try{
+const sql = `delete * from employees where id = $1;`;
+const res = await db.query(sql,[id]);
+console.log("Result -", result.rows);
+return res.rows[0].id;
+  }
+  catch(err){
+    console.error(err);
+  }
 }
