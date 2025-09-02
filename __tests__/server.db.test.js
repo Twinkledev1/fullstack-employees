@@ -18,6 +18,8 @@ afterAll(async () => {
   await db.end();
 });
 
+let seededEmployee;
+
 describe('"employees" queries', () => {
   test("getEmployees() returns the array of employees", async () => {
     const { rows: expected } = await db.query("SELECT * FROM employees");
@@ -40,18 +42,20 @@ describe('"employees" queries', () => {
       salary: 100001,
     };
     const result = await createEmployee(employee);
+    seededEmployee = result;
     expect(result).toEqual(
       expect.objectContaining({
         name: employee.name,
         birthday: expect.any(Date),
         salary: employee.salary,
-      }),
+      })
     );
   });
 
   test("updateEmployee() updates and returns the employee", async () => {
+
     const employee = {
-      id: 1,
+      id: seededEmployee.id,
       name: "updated employee",
       birthday: "1001-10-01",
       salary: 100001,
@@ -62,13 +66,13 @@ describe('"employees" queries', () => {
         name: employee.name,
         birthday: expect.any(Date),
         salary: employee.salary,
-      }),
+      })
     );
   });
 
   test("deleteEmployee() deletes the employee", async () => {
-    await deleteEmployee(1);
-    const { rows } = await db.query("SELECT * FROM employees WHERE id = 1");
+    await deleteEmployee(seededEmployee.id);
+    const { rows } = await db.query("SELECT * FROM employees WHERE id = $1", [seededEmployee.id]);
     expect(rows.length).toBe(0);
   });
 });
