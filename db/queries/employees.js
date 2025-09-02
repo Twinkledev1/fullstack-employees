@@ -12,7 +12,8 @@ export async function createEmployee({ name, birthday, salary }) {
     const res = await db.query(sql, values);
     return res.rows[0];
   } catch (error) {
-    console.error(error);
+    console.error("Error creating employee",error);
+    throw error;
   }
 }
 
@@ -40,7 +41,7 @@ export async function getEmployeesId(id) {
     const sql = `SELECT * FROM employees WHERE id = $1;`;
     const result = await db.query(sql, [id]);
     console.log("Result -", result.rows);
-    return result.rows[0].id;
+    return result.rows[0];
   } catch (error) {
     console.error(error);
   }
@@ -51,7 +52,20 @@ export async function getEmployeesId(id) {
  * @returns undefined if employee with the given id does not exist
  */
 export async function updateEmployee({ id, name, birthday, salary }) {
-  // TODO
+  try{
+    const sql = `update employees set name =$1, birthday =$2, salary= $3 where id =$4`
+const res = await db.query(sql,[name, birthday,salary,id]);
+// console.log("result - " , res);
+if (res.rowCount === 0){
+  return null;
+}
+return getEmployeesId(id);
+
+  }
+  catch(error){
+    console.error("Error updating employee",error);
+    throw error;
+  }
 }
 
 /**
@@ -59,7 +73,7 @@ export async function updateEmployee({ id, name, birthday, salary }) {
  * @returns undefined if employee with the given id does not exist
  */
 export async function deleteEmployee(id) {
-  // TODO
+  
   try{
 const sql = `delete from employees where id = $1 returning *;`;
 const res = await db.query(sql,[id]);
