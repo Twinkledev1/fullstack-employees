@@ -1,8 +1,8 @@
 import express from "express";
 import {
   getEmployees,
+  getEmployee,
   createEmployee,
-  getEmployeesId,
   deleteEmployee,
   updateEmployee,
 } from "../db/queries/employees.js";
@@ -26,14 +26,14 @@ employeesRouter.get("/", async (req, res) => {
 // POST /employees - creates a new employee
 employeesRouter.post("/", async (req, res) => {
   try {
-    const name = req.body.name;
-    const birthday = req.body.birthday;
-    const salary = Number(req.body.salary);
-
     // Check if request body exists
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).send("Request body is required");
     }
+
+    const name = req.body.name;
+    const birthday = req.body.birthday;
+    const salary = Number(req.body.salary);
 
     // Check if name is provided and not empty
     if (!name || name.trim() === "") {
@@ -56,7 +56,7 @@ employeesRouter.post("/", async (req, res) => {
     res.status(201).json(employees);
   } catch (err) {
     console.error("Error creating employees:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ err: "Internal server error" });
   }
 });
 
@@ -64,19 +64,19 @@ employeesRouter.post("/", async (req, res) => {
 
 employeesRouter.get("/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
 
-    // Check if provided id is not a positive integer
-    if (!id || id <= 0) {
-      return res.status(400).send("Employee id must be a positive integer");
+    // check if id is a valid positive integer
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send("Employee!!!! id must be a positive integer");
     }
 
     // Fetch employee from DB
 
-    const employee = await getEmployeesId(id);
+    const employee = await getEmployee(id);
 
     // Check if employee  exist
-    if (!id || id === 0) {
+    if (!employee) {
       return res.status(404).send(" Employee does not exist");
     }
 
@@ -92,15 +92,15 @@ employeesRouter.get("/:id", async (req, res) => {
 
 employeesRouter.delete("/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
 
     // Check if provided id is not a positive integer
-    if (!id || id <= 0) {
-      return res.status(400).send("Employee id must be a positive integer");
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send("Employee!!!! id must be a positive integer");
     }
 
     // Check if employee  exist
-    if (!id || id === 0) {
+    if (!id) {
       return res.status(404).send(" Employee does not exist");
     }
 
@@ -131,7 +131,7 @@ employeesRouter.put("/:id", async (req, res) => {
     const name = req.body.name;
     const birthday = req.body.birthday;
     const salary = Number(req.body.salary);
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
 
     // Check if name is provided and not empty
     if (!name || name.trim() === "") {
@@ -147,8 +147,8 @@ employeesRouter.put("/:id", async (req, res) => {
     if (!salary || salary <= 0) {
       return res.status(400).send("Salary is required");
     }
-    if (!id || id <= 0) {
-      return res.status(400).send("Employee id must be a positive integer");
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send("Employee!!!! id must be a positive integer");
     }
     const employee = await updateEmployee({ id, name, birthday, salary }); // wait for DB
     console.log("update employee - ", employee);
